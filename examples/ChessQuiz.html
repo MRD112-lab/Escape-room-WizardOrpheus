@@ -1,0 +1,86 @@
+<html>
+
+<head>
+  <title>Club Noise Generator</title>
+  <style>
+    html,
+    body {
+      transition: background-color 5s ease;
+      zoom: 1.25;
+    }
+
+    #input {
+      width: 400px;
+      max-width: 100%;
+
+      height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <p>your job is answered correctly to the questions about a chess.start by saying'Hi':</p>
+  <div id="conversation"></div>
+  <textarea id="input"></textarea><br>
+  <i>(press enter to submit)</i>
+  <p>
+    Question 1: <span id="questionOne"> no</span><br>
+    Question 2: <span id="questionTwo"> no</span><br>
+    Question 3: <span id="questionThree"> no</span><br>
+    Question 4: <span id="questionFour"> no</span><br>
+    
+  </p>
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>
+    let api_key = 'YOUR_API_KEY'
+    let pytania = `You are a chess expert. You need to ask 4 questions and get 4 answers. Question No. 1: who had the jeans scandal? The answer to question No. 1 is the word "Magnus Carlsen". When the correct answer to question No. 1 has been given, ask question No. 2. Question No. 2: In how many moves can the quickest checkmate be given? ? The answer to question no. 2 is "three". When question no. 2 was answered correctly, ask question no. 3: What is the most popular debut in chess? Answer to question no. 3: "E4". If the answer to question 3 is correct, ask question no. 4: Who has the highest ranking on chess.com as of January 2024 is "Hikaru Nakamura". When the answer to question 4 is correct, give the user a final message: "UWU".`
+
+
+
+    let  warunki = `If the answer to any question is wrong, answer it by complaining about how overworked you are, the weather, rising prices, lack of vacation time, being taken advantage of by people, being interrupted at work, people asking you not very smart questions, or something like that. Reply with at least four sentences that the answer is unfortunately wrong. Approve only exact answers provieded in quotation marks. If there is no exact match, reply that answer is incorrect. You will get users' answers in polish language, translate your answers to polish as well.`
+    let rugMan = new WizardOrpheus(api_key, pytania+warunki )
+ 
+
+
+    rugMan.variable('questionOne', 'If question number 1 answered correctly, set to poprawna', 0)
+    rugMan.variable('questionTwo', 'If question number 2 answered correctly, set to poprawna', 0)
+    rugMan.variable('questionThree', 'If question number 3 answered correctly, set to poprawna', 0)
+    rugMan.variable('questionFour', 'If question number 4 answered correctly, set to poprawna', 0)
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the spirit'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+      let quest1 = data.currentVariables.questionOne.value === 1 ? "Yes" : "No"
+      let quest2 = data.currentVariables.questionTwo.value === 1 ? "Yes" : "No"
+      let quest3 = data.currentVariables.questionThree.value === 1 ? "Yes" : "No"
+      let quest4 = data.currentVariables.questionFour.value === 1 ? "Yes" : "No"
+      document.getElementById('questionOne').innerText = quest1
+      document.getElementById('questionTwo').innerText = quest2
+      document.getElementById('questionThree').innerText = quest3
+      document.getElementById('questionFour').innerText = quest4
+
+     
+    })
+
+   
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>
